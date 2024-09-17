@@ -5,5 +5,5 @@ module type Comparable = sig
 end 
 
 module Find (C : Comparable) = struct 
-	failwith "implement me :(" 
+	let find _ _ = failwith "implement me :(" 
 end
