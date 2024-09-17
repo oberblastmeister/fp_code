@@ -1,0 +1,4 @@
+(executable
+ (public_name fp_code)
+ (name main)
+ (libraries fp_code))
