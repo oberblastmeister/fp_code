@@ -17,10 +17,16 @@ module type EqType = sig
   val equal : t -> t -> bool
 end
 
+module type ShowType = sig
+  type t
+
+  val show : t -> string
+end
+
 module Map = struct
   module type Signature = sig
-    (* 
-      If we were writing idiomatic OCaml code, we 
+    (*
+      If we were writing idiomatic OCaml code, we
       would name this `'a t`.
     *)
     type 'a map
@@ -39,9 +45,9 @@ module Map = struct
     module Key = Eq
 
     let empty = failwith "implement me!"
-    let add = failwith "implement me!"
-    let remove = failwith "implement me!"
-    let find = failwith "implement me!"
+    let add _ = failwith "implement me!"
+    let remove _ = failwith "implement me!"
+    let find _ = failwith "implement me!"
   end
 end
 
@@ -105,7 +111,7 @@ module Container_funcs = struct
 end
 
 (*
-Now let's augment our Map module with these functions by 
+Now let's augment our Map module with these functions by
 `include`ing the result of applying a fold function to
 `Container_funcs.Make`.
 *)
@@ -128,7 +134,7 @@ module Map2 = struct
       type 'a container = 'a map
       type 'a element = Eq.t * 'a
 
-      let fold = failwith "implement me!"
+      let fold _ = failwith "implement me!"
     end)
   end
 end
@@ -153,20 +159,20 @@ module Set = struct
 
     include
       Container_funcs.Signature
-        (* Notice how both of these ignore the `'a`; our `set` type isn't polymorphic *)
+      (* Notice how both of these ignore the `'a`; our `set` type isn't polymorphic *)
         with type 'a container := set
          and type 'a element := Key.t
 
     (*
-      If this set implementation was something half-decent like a 
-      binary search tree, we would have a faster implementation of 
-      `max_element` than the one provided by `Container_funcs` as long as the 
+      If this set implementation was something half-decent like a
+      binary search tree, we would have a faster implementation of
+      `max_element` than the one provided by `Container_funcs` as long as the
       comparison function is the same as the one used for the tree itself.
       We would like to replace the `max_element` with the faster one that
       doesn't take the comparison function as an argument and provide access
       to the slower one under the name `max_element_with`. To do this we would
       define `max_element_with` to be the same as `max_element` and then
-      shadow `max_element` with our new implementation. But alas, we didn't 
+      shadow `max_element` with our new implementation. But alas, we didn't
       implement a binary search tree.
     *)
     val max_element_with : (Key.t -> Key.t -> int) -> set -> Key.t option
@@ -175,23 +181,98 @@ module Set = struct
     (* val max_element : t -> Key.t option *)
   end
 
-  module Make(Eq: EqType) = struct
+  module Make (Eq : EqType) = struct
     type set (* implement me! *)
-    module Key = Eq
-    
-    let empty = failwith "implement me!"
-    let add = failwith "implement me!"
-    let mem = failwith "implement me!"
 
-    include Container_funcs.Make(struct 
+    module Key = Eq
+
+    let empty _ = failwith "implement me!"
+    let add _ = failwith "implement me!"
+    let mem _ = failwith "implement me!"
+
+    include Container_funcs.Make (struct
       type 'a container = set
       type 'a element = Eq.t
 
-      let fold = failwith "implement me!"
+      let fold _ = failwith "implement me!"
     end)
 
     let max_element_with = max_element
 
     (* let max_element = ... *)
+  end
+end
+
+(*
+  The interface for a list builder.
+  We want to support fast appends.
+*)
+module type Builder = sig
+  type 'a t
+
+  val empty : 'a t
+  val singleton : 'a -> 'a t
+  val append : 'a t -> 'a t -> 'a t
+  val to_list : 'a t -> 'a list
+end
+
+module DList : Builder = struct
+  type 'a t = 'a list -> 'a list
+
+  let empty _ = failwith ""
+  let singleton _ = failwith ""
+  let append _ = failwith ""
+  let to_list _ = failwith ""
+end
+
+module Tree : Builder = struct
+  type 'a t = Empty | Singleton of 'a | Append of 'a t * 'a t
+
+  let empty = failwith ""
+  let singleton _ = failwith ""
+  let append _ = failwith ""
+
+  (* try to make this fail recursive *)
+  let to_list _ = failwith ""
+end
+
+(*
+  Implement string interning using generative functors.
+  Different string interners should have different symbol types so that ids do not clash.
+*)
+module SymbolTable = struct
+  module type Signature = sig
+    type symbol
+
+    val insert : string -> symbol
+
+    (*
+    symbol should implement EqType.
+    This is a destructive substitution, which removes the type t and replaces it with symbol
+    *)
+    include EqType with type t := symbol
+    include ShowType with type t := symbol
+  end
+
+  (*
+  The empty parameter marks the Make functor as generative.
+  This means that applications of a functor to the same module will still generate different types, unlike applicative functors.
+  *)
+  module Make () : Signature = struct
+    type symbol = { id : int; string : string }
+
+    (*
+      We need the functor to be generative because we are initializing mutable state.
+      This value is an implementation detail and is not present in the interaace
+    *)
+    let counter = ref 0
+    (*
+      initialize this to a map value
+      *)
+
+    let map = ref (failwith "")
+    let insert _ = failwith ""
+    let equal _ = failwith ""
+    let show _ = failwith ""
   end
 end
