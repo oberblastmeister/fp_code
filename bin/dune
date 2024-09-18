@@ -1,4 +1,9 @@
 (executable
- (public_name fp_code)
- (name main)
- (libraries fp_code))
+ (name fp_code))
+
+(env
+ (dev
+  (flags
+   (:standard -warn-error -A)))
+ (release
+  (flags :standard -warn-error +A)))
