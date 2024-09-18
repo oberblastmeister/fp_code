@@ -39,7 +39,7 @@ module Map = struct
     val find : Key.t -> 'a map -> 'a option
   end
 
-  module Make (Eq : EqType) : Signature with type Key.t := Eq.t = struct
+  module Make (Eq : EqType) : Signature with type Key.t = Eq.t = struct
     module Key = Eq
 
     type 'a map = (Key.t * 'a) list
@@ -99,9 +99,6 @@ module Container_funcs = struct
     Signature
       with type 'a container := 'a Fold.container
        and type 'b element := 'b Fold.element = struct
-    type 'a container = 'a Fold.container
-    type 'a element = 'a Fold.element
-
     let fold _ = failwith "implement me!"
     let length _ = failwith "implement me!"
     let count _ = failwith "implement me!"
@@ -127,7 +124,7 @@ module Map2 = struct
          and type 'a element := Key.t * 'a
   end
 
-  module Make (Eq : EqType) : Signature with type Key.t := Eq.t = struct
+  module Make (Eq : EqType) : Signature with type Key.t = Eq.t = struct
     include Map.Make (Eq)
 
     include Container_funcs.Make (struct
@@ -154,7 +151,7 @@ module Set = struct
     module Key : EqType
 
     val empty : set
-    val add : Key.t
+    val add : Key.t -> set -> set
     val mem : Key.t -> set -> bool
 
     include
@@ -177,16 +174,16 @@ module Set = struct
     *)
     val max_element_with : (Key.t -> Key.t -> int) -> set -> Key.t option
 
-    (* This function won't actaully exist, so we'll comment out its signature *)
+    (* This function won't actually exist, so we'll comment out its signature *)
     (* val max_element : t -> Key.t option *)
   end
 
-  module Make (Eq : EqType) = struct
-    type set (* implement me! *)
-
+  module Make (Eq : EqType) : Signature with type Key.t = Eq.t = struct
     module Key = Eq
 
-    let empty _ = failwith "implement me!"
+    type set = Key.t list
+
+    let empty = []
     let add _ = failwith "implement me!"
     let mem _ = failwith "implement me!"
 
