@@ -1,4 +1,4 @@
-== PLT Club Exercises
+# PLT Club Exercises
 
 You may need to run `opam update` first.
 
