@@ -1,3 +1,7 @@
+let (=) = ()
+[@@alert wrong "You're not supposed to use this function. Instead use Int.equal for ints, etc."]
+let (<>) = ()
+[@@alert wrong "You're not supposed to use this function. Instead use not (Int.equal) for ints, etc."]
 (*
    Let's start by implementing a really bad map using a functor.
    It just needs to be a list of key-value pairs.
@@ -193,8 +197,10 @@ module Set = struct
 end
 
 (*
-  The interface for a list builder.
-  We want to support fast appends.
+  This is an interface for a builder like the one from the presentation.
+  Anything that we put in for this signature should have a fast append,
+  but of course we can't guarentee that in the type system.
+  Let's 
 *)
 module type Builder = sig
   type 'a t
@@ -205,6 +211,9 @@ module type Builder = sig
   val to_list : 'a t -> 'a list
 end
 
+(*
+   Let's implement a DList like 
+*)
 module DList : Builder = struct
   type 'a t = 'a list -> 'a list
 
