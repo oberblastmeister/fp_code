@@ -162,20 +162,14 @@ module Set = struct
 
     (*
       If this set implementation was something half-decent like a
-      binary search tree, we would have a faster implementation of
+      binary search tree, we could have a faster implementation of
       `max_element` than the one provided by `Container_funcs` as long as the
       comparison function is the same as the one used for the tree itself.
-      We would like to replace the `max_element` with the faster one that
-      doesn't take the comparison function as an argument and provide access
-      to the slower one under the name `max_element_with`. To do this we would
-      define `max_element_with` to be the same as `max_element` and then
-      shadow `max_element` with our new implementation. But alas, we didn't
-      implement a binary search tree.
+      Let's call this new function maximum.
+      But alas, we didn't implement a binary search tree.
     *)
-    val max_element_with : (Key.t -> Key.t -> int) -> set -> Key.t option
-
     (* This function won't actually exist, so we'll comment out its signature *)
-    (* val max_element : t -> Key.t option *)
+    (* val maximum : t -> Key.t option *)
   end
 
   module Make (Eq : EqType) : Signature with type Key.t = Eq.t = struct
@@ -194,9 +188,7 @@ module Set = struct
       let fold _ = failwith "implement me!"
     end)
 
-    let max_element_with = max_element
-
-    (* let max_element = ... *)
+    (* let maximum = ... *)
   end
 end
 
@@ -272,4 +264,23 @@ module SymbolTable = struct
     let equal _ = failwith ""
     let show _ = failwith ""
   end
+end
+
+module Ast : sig
+  type expr =
+    | Var of string
+    | Lam of string * expr
+    | App of expr * expr
+    | Let of (string * expr) * expr
+
+  val pretty : expr -> string
+end = struct
+  type expr =
+    | Var of string
+    | Lam of string * expr
+    | App of expr * expr
+    | Let of (string * expr) * expr
+
+  (* implement this with a builder *)
+  let pretty expr = failwith ""
 end
