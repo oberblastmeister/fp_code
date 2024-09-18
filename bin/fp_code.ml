@@ -40,11 +40,11 @@ module Map = struct
   end
 
   module Make (Eq : EqType) : Signature with type Key.t := Eq.t = struct
-    type 'a map
-
     module Key = Eq
 
-    let empty = failwith "implement me!"
+    type 'a map = (Key.t * 'a) list
+
+    let empty = []
     let add _ = failwith "implement me!"
     let remove _ = failwith "implement me!"
     let find _ = failwith "implement me!"
@@ -102,11 +102,11 @@ module Container_funcs = struct
     type 'a container = 'a Fold.container
     type 'a element = 'a Fold.element
 
-    let fold = failwith "implement me!"
-    let length = failwith "implement me!"
-    let count = failwith "implement me!"
-    let find = failwith "implement me!"
-    let max_element = failwith "implement me!"
+    let fold _ = failwith "implement me!"
+    let length _ = failwith "implement me!"
+    let count _ = failwith "implement me!"
+    let find _ = failwith "implement me!"
+    let max_element _ = failwith "implement me!"
   end
 end
 
@@ -228,7 +228,7 @@ end
 module Tree : Builder = struct
   type 'a t = Empty | Singleton of 'a | Append of 'a t * 'a t
 
-  let empty = failwith ""
+  let empty = Empty
   let singleton _ = failwith ""
   let append _ = failwith ""
 
@@ -270,7 +270,7 @@ module SymbolTable = struct
       initialize this to a map value
       *)
 
-    let map = ref (failwith "")
+    let map = ref []
     let insert _ = failwith ""
     let equal _ = failwith ""
     let show _ = failwith ""
