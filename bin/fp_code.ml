@@ -1,3 +1,4 @@
+open Header
 (*
    Let's start by implementing a really bad map using a functor.
    It just needs to be a list of key-value pairs.
@@ -45,8 +46,8 @@ module Map = struct
     type 'a map = (Key.t * 'a) list
 
     let empty = []
-    let add _ = failwith "implement me!"
-    let remove _ = failwith "implement me!"
+    let add _ _ _ = failwith "implement me!"
+    let remove _ _ = failwith "implement me!" ( = )
     let find _ = failwith "implement me!"
   end
 end
@@ -70,8 +71,7 @@ module type Foldable = sig
   *)
   type 'a element
 
-  val fold :
-    ('a element -> 'a element) -> 'a element -> 'a container -> 'a element
+  val fold : ('b -> 'a element -> 'b) -> 'b -> 'a container -> 'b
 end
 
 module Container_funcs = struct
@@ -79,8 +79,7 @@ module Container_funcs = struct
     type 'a container
     type 'a element
 
-    val fold :
-      ('a element -> 'a element) -> 'a element -> 'a container -> 'a element
+    val fold : ('b -> 'a element -> 'b) -> 'b -> 'a container -> 'b
 
     (* returns the number of elements in the container*)
     val length : 'a container -> int
@@ -89,10 +88,10 @@ module Container_funcs = struct
     val count : ('a element -> bool) -> 'a container -> int
 
     (* returns the first element that satisfies the predicate, `None` if there aren't any *)
-    val find : ('a -> bool) -> 'a container -> 'a option
+    val find : ('a element -> bool) -> 'a container -> 'a element option
 
     (* returns the maximum element in the container using the provided comparison function, `None` if there aren't any *)
-    val max_element : ('a -> 'a -> int) -> 'a container -> 'a option
+    val max_element : ('a element -> 'a element -> int) -> 'a container -> 'a element option
   end
 
   module Make (Fold : Foldable) :
@@ -193,8 +192,10 @@ module Set = struct
 end
 
 (*
-  The interface for a list builder.
-  We want to support fast appends.
+  This is an interface for a builder like the one from the presentation.
+  Anything that we put in for this signature should have a fast append,
+  but of course we can't guarentee that in the type system.
+  Let's 
 *)
 module type Builder = sig
   type 'a t
@@ -205,6 +206,9 @@ module type Builder = sig
   val to_list : 'a t -> 'a list
 end
 
+(*
+  Let's build two implementation of the Builder signature.
+*)
 module DList : Builder = struct
   type 'a t = 'a list -> 'a list
 
@@ -226,8 +230,10 @@ module Tree : Builder = struct
 end
 
 (*
-  Implement string interning using generative functors.
-  Different string interners should have different symbol types so that ids do not clash.
+  With string interning, we associate a number with every interned string
+  that allows us to perform operations such as checking for equality quickly.
+  We use generative functors so that interned strings from different tables 
+  do not interoperate.
 *)
 module SymbolTable = struct
   module type Signature = sig
@@ -237,7 +243,8 @@ module SymbolTable = struct
 
     (*
     symbol should implement EqType.
-    This is a destructive substitution, which removes the type t and replaces it with symbol
+    This is a destructive substitution, which removes the type t from the EqType signature
+    and replaces it with symbol.
     *)
     include EqType with type t := symbol
     include ShowType with type t := symbol
@@ -260,27 +267,8 @@ module SymbolTable = struct
       *)
 
     let map = ref []
-    let insert _ = failwith ""
-    let equal _ = failwith ""
-    let show _ = failwith ""
+    let insert _ = failwith "implement me!"
+    let equal _ = failwith "implement me!"
+    let show _ = failwith "implement me!"
   end
-end
-
-module Ast : sig
-  type expr =
-    | Var of string
-    | Lam of string * expr
-    | App of expr * expr
-    | Let of (string * expr) * expr
-
-  val pretty : expr -> string
-end = struct
-  type expr =
-    | Var of string
-    | Lam of string * expr
-    | App of expr * expr
-    | Let of (string * expr) * expr
-
-  (* implement this with a builder *)
-  let pretty expr = failwith ""
 end
