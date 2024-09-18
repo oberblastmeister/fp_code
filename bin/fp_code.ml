@@ -207,7 +207,7 @@ module type Builder = sig
 end
 
 (*
-   Let's implement a DList like 
+  Let's build two implementation of the Builder signature.
 *)
 module DList : Builder = struct
   type 'a t = 'a list -> 'a list
@@ -230,8 +230,10 @@ module Tree : Builder = struct
 end
 
 (*
-  Implement string interning using generative functors.
-  Different string interners should have different symbol types so that ids do not clash.
+  With string interning, we associate a number with every interned string
+  that allows us to perform operations such as checking for equality quickly.
+  We use generative functors so that interned strings from different tables 
+  do not interoperate.
 *)
 module SymbolTable = struct
   module type Signature = sig
@@ -241,7 +243,8 @@ module SymbolTable = struct
 
     (*
     symbol should implement EqType.
-    This is a destructive substitution, which removes the type t and replaces it with symbol
+    This is a destructive substitution, which removes the type t from the EqType signature
+    and replaces it with symbol.
     *)
     include EqType with type t := symbol
     include ShowType with type t := symbol
@@ -264,27 +267,8 @@ module SymbolTable = struct
       *)
 
     let map = ref []
-    let insert _ = failwith ""
-    let equal _ = failwith ""
-    let show _ = failwith ""
+    let insert _ = failwith "implement me!"
+    let equal _ = failwith "implement me!"
+    let show _ = failwith "implement me!"
   end
-end
-
-module Ast : sig
-  type expr =
-    | Var of string
-    | Lam of string * expr
-    | App of expr * expr
-    | Let of (string * expr) * expr
-
-  val pretty : expr -> string
-end = struct
-  type expr =
-    | Var of string
-    | Lam of string * expr
-    | App of expr * expr
-    | Let of (string * expr) * expr
-
-  (* implement this with a builder *)
-  let pretty expr = failwith ""
 end
