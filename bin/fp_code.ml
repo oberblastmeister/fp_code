@@ -1,7 +1,4 @@
-let (=) = ()
-[@@alert wrong "You're not supposed to use this function. Instead use Int.equal for ints, etc."]
-let (<>) = ()
-[@@alert wrong "You're not supposed to use this function. Instead use not (Int.equal) for ints, etc."]
+open Header
 (*
    Let's start by implementing a really bad map using a functor.
    It just needs to be a list of key-value pairs.
@@ -49,8 +46,8 @@ module Map = struct
     type 'a map = (Key.t * 'a) list
 
     let empty = []
-    let add _ = failwith "implement me!"
-    let remove _ = failwith "implement me!"
+    let add _ _ _ = failwith "implement me!"
+    let remove _ _ = failwith "implement me!" ( = )
     let find _ = failwith "implement me!"
   end
 end
@@ -74,8 +71,7 @@ module type Foldable = sig
   *)
   type 'a element
 
-  val fold :
-    ('a element -> 'a element) -> 'a element -> 'a container -> 'a element
+  val fold : ('b -> 'a element -> 'b) -> 'b -> 'a container -> 'b
 end
 
 module Container_funcs = struct
@@ -83,8 +79,7 @@ module Container_funcs = struct
     type 'a container
     type 'a element
 
-    val fold :
-      ('a element -> 'a element) -> 'a element -> 'a container -> 'a element
+    val fold : ('b -> 'a element -> 'b) -> 'b -> 'a container -> 'b
 
     (* returns the number of elements in the container*)
     val length : 'a container -> int
@@ -93,10 +88,10 @@ module Container_funcs = struct
     val count : ('a element -> bool) -> 'a container -> int
 
     (* returns the first element that satisfies the predicate, `None` if there aren't any *)
-    val find : ('a -> bool) -> 'a container -> 'a option
+    val find : ('a element -> bool) -> 'a container -> 'a element option
 
     (* returns the maximum element in the container using the provided comparison function, `None` if there aren't any *)
-    val max_element : ('a -> 'a -> int) -> 'a container -> 'a option
+    val max_element : ('a element -> 'a element -> int) -> 'a container -> 'a element option
   end
 
   module Make (Fold : Foldable) :
